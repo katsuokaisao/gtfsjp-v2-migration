@@ -1,0 +1,33 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - docker-compose -f docker/docker-compose.yml build
+  up:
+    cmds:
+      - docker-compose -f docker/docker-compose.yml up -d
+  down:
+    cmds:
+      - docker-compose -f docker/docker-compose.yml down
+  test-connect:
+    cmds:
+      - |
+        docker-compose -f docker/docker-compose.yml run gtfsdb \
+        pipenv run python gtfsdb/cli.py test-connection \
+        -db postgresql://username:password@db:5432/mydatabase
+  create-table:
+    cmds:
+      - |
+        docker-compose -f docker/docker-compose.yml run gtfsdb \
+        pipenv run python gtfsdb/cli.py create-table \
+        -db postgresql://username:password@db:5432/mydatabase
+  migrate:
+    cmds:
+      - |
+        docker-compose -f docker/docker-compose.yml run gtfsdb \
+        pipenv run python gtfsdb/cli.py migrate \
+        -db postgresql://username:password@db:5432/mydatabase \
+        -dir gtfs
