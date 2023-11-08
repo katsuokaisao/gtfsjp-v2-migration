@@ -1,5 +1,5 @@
 import os
-import urllib
+from urllib.request import urlopen
 import zipfile
 import tempfile
 
@@ -57,7 +57,7 @@ class Gtfs():
             self.db.load_tables(extract_dir)
 
     def download_zip(self, url, extract_path):
-        with urllib.request.urlopen(url) as download_file:
+        with urlopen(url) as download_file:
             data = download_file.read()
             with open(extract_path, mode='wb') as zip_file:
                 zip_file.write(data)
