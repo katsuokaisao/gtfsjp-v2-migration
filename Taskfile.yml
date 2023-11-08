@@ -31,3 +31,9 @@ tasks:
         pipenv run python gtfsdb/cli.py migrate \
         -db postgresql://username:password@db:5432/mydatabase \
         -dir gtfs
+  check-data:
+    cmds:
+      - |
+        docker-compose -f docker/docker-compose.yml run gtfsdb \
+        pipenv run python gtfsdb/cli.py check-data \
+        -db postgresql://username:password@db:5432/mydatabase
