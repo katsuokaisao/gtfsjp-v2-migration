@@ -34,6 +34,7 @@ class Gtfs():
             self.unzip(zip_file_path, extract_dir)
             self.check_gtfs_files(extract_dir)
             self.db.load_tables(extract_dir)
+            return
 
         # zip directory が指定されている
         # zip ファイルがあればそれを展開してデータをロード
