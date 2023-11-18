@@ -9,6 +9,8 @@ click = "*"
 sqlalchemy = "*"
 pandas = "*"
 numpy = "*"
+mojimoji = "*"
+pycountry = "*"
 
 [dev-packages]
 

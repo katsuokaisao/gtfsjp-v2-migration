@@ -18,7 +18,7 @@ class _Base(object):
 
         # validation check
         for _, row_series in df.iterrows():
-            valid, reason = self.validate(row_series, alias)
+            valid, reason = self.validate_record(row_series, alias)
             if not valid:
                 print("validation error: %s" % reason)
                 print("row series", row_series)
@@ -65,6 +65,9 @@ class _Base(object):
 
         process_time = time.time() - start_time
         print("Loaded %s in %s seconds" % (self.__tablename__, process_time))
+
+    def validate_record(row_series, alias):
+        raise("should implement")
 
     def make_record(row_series, alias):
         raise("should implement")
