@@ -22,6 +22,16 @@ class Gtfs():
         ]
 
     def load(self):
+        extract_dir = self.load_zip()
+        self.db.load_tables(extract_dir)
+        print("loading completed")
+
+    def validate(self):
+        extract_dir = self.load_zip()
+        self.db.validate_tables(extract_dir)
+        print("validation completed")
+
+    def load_zip(self):
         if self.url is not None and self.directory is not None:
             raise Exception("Cannot specify both url and directory")
 
@@ -33,8 +43,7 @@ class Gtfs():
             self.download_zip(self.url, zip_file_path)
             self.unzip(zip_file_path, extract_dir)
             self.check_gtfs_files(extract_dir)
-            self.db.load_tables(extract_dir)
-            return
+            return extract_dir
 
         # zip directory が指定されている
         # zip ファイルがあればそれを展開してデータをロード
@@ -43,18 +52,17 @@ class Gtfs():
             zip_files = [f for f in os.listdir(self.directory) if f.endswith('.zip')]
             if len(zip_files) == 0:
                 self.check_gtfs_files(self.directory)
-                self.db.load_tables(self.directory)
-                return
+                return self.directory
 
             if len(zip_files) != 1:
-                # 複数ファイルに対応できるようにするか、前処理でファイル統合するかは要検討
+                # 複数ディレクトリに対応できるようにするか、前処理で複数ディレクトリ統合するかは要検討
                 raise Exception("Multiple zip files found")
 
             zip_file = zip_files[0]
             extract_dir = tempfile.mkdtemp()
             self.unzip(os.path.join(self.directory, zip_file), extract_dir)
             self.check_gtfs_files(extract_dir)
-            self.db.load_tables(extract_dir)
+            return extract_dir
 
     def download_zip(self, url, extract_path):
         with urlopen(url) as download_file:

@@ -6,8 +6,7 @@ from sqlalchemy import insert
 
 
 class _Base(object):
-    @classmethod
-    def load_table(self, extract_dir, engine, alias):
+    def load_table(self, extract_dir, sess, alias):
         file_path = os.path.join(extract_dir, self.filename)
         if not os.path.exists(file_path):
             return
@@ -16,7 +15,38 @@ class _Base(object):
 
         df = pd.read_csv(file_path)
 
-        # validation check
+        batch_size = 10000
+        i = 0
+        records = []
+        for _, row_series in df.iterrows():
+            i += 1
+
+            record = self.make_record(row_series, alias)
+            records.append(record)
+
+            if i >= batch_size:
+                sess.bulk_save_objects(records, return_defaults=True)
+
+                print("inserted %s records" % len(records))
+                i = 0
+                records = []
+
+        if len(records) > 0:
+            sess.bulk_save_objects(records, return_defaults=True)
+            print("inserted %s records" % len(records))
+
+        process_time = time.time() - start_time
+        print("Loaded %s in %s seconds" % (self.__tablename__, process_time))
+
+    def validate_table(self, extract_dir, alias):
+        file_path = os.path.join(extract_dir, self.filename)
+        if not os.path.exists(file_path):
+            return
+
+        start_time = time.time()
+
+        df = pd.read_csv(file_path)
+
         for _, row_series in df.iterrows():
             valid, reason = self.validate_record(row_series, alias)
             if not valid:
@@ -24,52 +54,13 @@ class _Base(object):
                 print("row series", row_series)
                 raise Exception(reason)
 
-        batch_size = 10000
-        i = 0
-        records = []
-        for _, row_series in df.iterrows():
-            i += 1
-
-            format_record = self.make_record(row_series, alias)
-            records.append(format_record)
-
-            if i >= batch_size:
-                # e.g.
-                # ...     insert(User),
-                # ...     [
-                # ...         {"name": "spongebob", "fullname": "Spongebob Squarepants"},
-                # ...         {"name": "sandy", "fullname": "Sandy Cheeks"},
-                # ...         {"name": "patrick", "fullname": "Patrick Star"},
-                # ...         {"name": "squidward", "fullname": "Squidward Tentacles"},
-                # ...         {"name": "ehkrabs", "fullname": "Eugene H. Krabs"},
-                # ...     ],
-                # ... )
-                engine.execute(
-                    insert(
-                        self.__class__,
-                        records
-                    )
-                )
-                print("inserted %s records" % len(records))
-                i = 0
-                records = []
-
-        if len(records) > 0:
-            engine.execute(
-                insert(
-                    self.__class__,
-                    records
-                )
-            )
-            print("inserted %s records" % len(records))
-
         process_time = time.time() - start_time
-        print("Loaded %s in %s seconds" % (self.__tablename__, process_time))
+        print("Validated %s in %s seconds" % (self.__tablename__, process_time))
 
-    def validate_record(row_series, alias):
+    def validate_record(self, row_series, alias):
         raise("should implement")
 
-    def make_record(row_series, alias):
+    def make_record(self, row_series, alias):
         raise("should implement")
 
 Base = declarative_base(cls=_Base)

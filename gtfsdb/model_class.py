@@ -34,3 +34,22 @@ target_classes = [
     Translation,
     Trip,
 ]
+
+target_instances = [
+    AgencyJP(),
+    Agency(),
+    CalendarDate(),
+    Calendar(),
+    FareAttribute(),
+    FareRule(),
+    FeedInfo(),
+    Frequency(),
+    OfficeJP(),
+    Route(),
+    Shape(),
+    StopTime(),
+    Stop(),
+    Transfer(),
+    Translation(),
+    Trip(),
+]

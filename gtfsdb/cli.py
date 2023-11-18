@@ -1,7 +1,7 @@
 import click
 from db import Database
 from gtfs import Gtfs
-from model_class import target_classes
+from model_class import target_classes, target_instances
 
 
 @click.group()
@@ -33,9 +33,20 @@ def create_table(database_url, drop):
 def migrate(database_url, directory, url):
     db = Database(database_url)
     db.connect()
-    db.set_target_classes(target_classes)
+    db.set_target_instances(target_instances)
     gtfs = Gtfs(directory, url, db)
     gtfs.load()
+
+@cli.command(short_help='validate csv files')
+@click.option('--database_url', '-db', help='postgresql database url with appropriate permissions for connection')
+@click.option('--directory', '-dir', help='directory containing gtfs csv files or zip file')
+@click.option('--url', '-u', help='url containing GTFS zip file')
+def validate(database_url, directory, url):
+    db = Database(database_url)
+    db.connect()
+    db.set_target_instances(target_instances)
+    gtfs = Gtfs(directory, url, db)
+    gtfs.validate()
 
 @cli.command(short_help='check data exists in tables')
 @click.option('--database_url', '-db', help='postgresql database url with appropriate permissions for connection')
