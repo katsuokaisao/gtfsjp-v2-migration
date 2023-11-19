@@ -10,7 +10,6 @@ from model.conversion.string import zenkaku_to_hankaku
 
 class Agency(Base):
     filename = 'agency.txt'
-    system_alias_name = "system_agency_id"
     __tablename__ = 'agencies'
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -39,6 +38,7 @@ class Agency(Base):
         lazy="joined", innerjoin=True,
     )
 
+    @classmethod
     def validate_record(self, row_series, alias):
         required_columns = ['agency_id', 'agency_name', 'agency_url', 'agency_timezone']
         for column in required_columns:
@@ -97,24 +97,24 @@ class Agency(Base):
 
         return True, ""
 
-    def make_record(self, row_series, alias):
-        self.agency_id = row_series['agency_id']
-        self.agency_name = row_series['agency_name']
-        self.agency_url = row_series['agency_url']
-        self.agency_timezone = row_series['agency_timezone']
-        self.agency_lang = row_series['agency_lang']
-        self.agency_phone = row_series['agency_phone']
-        self.agency_fare_url = row_series['agency_fare_url']
-        self.agency_email = row_series['agency_email']
+    @classmethod
+    def create_instance_from_series(self, row_series, alias):
+        agency_id = row_series['agency_id']
+        agency_name = row_series['agency_name']
+        agency_url = row_series['agency_url']
+        agency_timezone = row_series['agency_timezone']
+        agency_lang = row_series.get('agency_lang', None)
+        agency_phone = row_series.get('agency_phone', None)
+        agency_fare_url = row_series.get('agency_fare_url', None)
+        agency_email = row_series.get('agency_email', None)
 
-    def make_dict(self):
-        return {
-            'agency_id': self.agency_id,
-            'agency_name': self.agency_name,
-            'agency_url': self.agency_url,
-            'agency_timezone': self.agency_timezone,
-            'agency_lang': self.agency_lang,
-            'agency_phone': self.agency_phone,
-            'agency_fare_url': self.agency_fare_url,
-            'agency_email': self.agency_email,
-        }
+        return Agency(
+            agency_id=agency_id,
+            agency_name=agency_name,
+            agency_url=agency_url,
+            agency_timezone=agency_timezone,
+            agency_lang=agency_lang,
+            agency_phone=agency_phone,
+            agency_fare_url=agency_fare_url,
+            agency_email=agency_email,
+        )

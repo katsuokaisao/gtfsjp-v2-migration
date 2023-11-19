@@ -1,6 +1,10 @@
+import datetime
 from sqlalchemy import Column, String, Integer, Date
 from model.base import Base
-
+from model.validation.url import is_valid_url
+from model.validation.lang import is_valid_language_code
+from model.validation.time import is_valid_yyyymmdd_format
+from model.conversion.string import zenkaku_to_hankaku
 
 class FeedInfo(Base):
     filename = 'feed_info.txt'
@@ -13,3 +17,72 @@ class FeedInfo(Base):
     feed_start_date = Column(Date) # YYYYMMDD
     feed_end_date = Column(Date) # YYYYMMDD
     feed_version = Column(String(255))
+
+    @classmethod
+    def validate_record(self, row_series, alias):
+        required_columns = ['feed_publisher_name', 'feed_publisher_url', 'feed_lang']
+        for column in required_columns:
+            if column not in row_series:
+                return False, f"column {column} is required"
+            if not row_series[column]:
+                return False, f"column {column} is required"
+
+        url_columns = ['feed_publisher_url']
+        for column in url_columns:
+            url = row_series[column]
+            if not is_valid_url(url):
+                return False, f"column {column} is not valid url: {url}"
+
+        lang_code_columns = ['feed_lang']
+        for column in lang_code_columns:
+            lang_code = row_series[column]
+            lang_code =zenkaku_to_hankaku(lang_code)
+            if not is_valid_language_code(lang_code):
+                return False, f"column {column} is not valid language code: {lang_code}"
+
+        yyyymmdd_format_columns = ['feed_start_date', 'feed_end_date']
+        for column in yyyymmdd_format_columns:
+            date = row_series[column]
+            if date:
+                date = zenkaku_to_hankaku(date)
+                if not is_valid_yyyymmdd_format(date):
+                    print(f"column {column} is not valid yyyymmdd format: {date}")
+
+        if 'feed_start_date' in row_series and 'feed_end_date' in row_series:
+            feed_start_date = row_series['feed_start_date']
+            feed_end_date = row_series['feed_end_date']
+            if feed_start_date and feed_end_date:
+                feed_start_date = zenkaku_to_hankaku(feed_start_date)
+                feed_end_date = zenkaku_to_hankaku(feed_end_date)
+                feed_start_date = datetime.datetime.strptime(feed_start_date, '%Y%m%d')
+                feed_end_date = datetime.datetime.strptime(feed_end_date, '%Y%m%d')
+                if feed_start_date > feed_end_date:
+                    print(f"column feed_start_date should be earlier than feed_end_date: {feed_start_date} > {feed_end_date}")
+
+        return True, None
+
+    @classmethod
+    def create_instance_from_series(row_series, alias):
+        feed_publisher_name = row_series['feed_publisher_name']
+        feed_publisher_url = row_series['feed_publisher_url']
+        feed_lang = row_series['feed_lang']
+        feed_start_date = row_series['feed_start_date']
+        feed_end_date = row_series['feed_end_date']
+        feed_version = row_series['feed_version']
+
+        feed_lang = zenkaku_to_hankaku(feed_lang)
+        if feed_start_date:
+            feed_start_date = zenkaku_to_hankaku(feed_start_date)
+            feed_start_date = datetime.datetime.strptime(feed_start_date, '%Y%m%d')
+        if feed_end_date:
+            feed_end_date = zenkaku_to_hankaku(feed_end_date)
+            feed_end_date = datetime.datetime.strptime(feed_end_date, '%Y%m%d')
+
+        return FeedInfo(
+            feed_publisher_name=feed_publisher_name,
+            feed_publisher_url=feed_publisher_url,
+            feed_lang=feed_lang,
+            feed_start_date=feed_start_date,
+            feed_end_date=feed_end_date,
+            feed_version=feed_version,
+        )

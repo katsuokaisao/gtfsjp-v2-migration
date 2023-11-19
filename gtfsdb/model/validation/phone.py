@@ -23,16 +23,16 @@ import re
 # 0(XXX)XX-XXXX
 # 0(XXXX)X-XXXX
 
-landline_phone_number_with_hyphen_re = re.compile(r'^0(\d-\d{4}|\d{2}-\d{3}|\d{3}-\d{2}|\d{4}-\d)-\d{4}$')
-landline_phone_number_with_bracket_re = re.compile(r'^0(\(\d\)\d{4}|\(\d{2}\)\d{3}|\(\d{3}\)\d{2}|\(\d{4}\)\d)-\d{4}$')
-landline_phone_number_re = re.compile(r'^0\d{9}$')
+landline_phone_number_with_hyphen_pattern = re.compile(r'^0(\d-\d{4}|\d{2}-\d{3}|\d{3}-\d{2}|\d{4}-\d)-\d{4}$')
+landline_phone_number_with_bracket_pattern = re.compile(r'^0(\(\d\)\d{4}|\(\d{2}\)\d{3}|\(\d{3}\)\d{2}|\(\d{4}\)\d)-\d{4}$')
+landline_phone_number_pattern = re.compile(r'^0\d{9}$')
 
 
 def is_valid_landline_phone(phone):
-    if landline_phone_number_with_hyphen_re.match(phone):
+    if landline_phone_number_with_hyphen_pattern.match(phone):
         return True
-    if landline_phone_number_with_bracket_re.match(phone):
+    if landline_phone_number_with_bracket_pattern.match(phone):
         return True
-    if landline_phone_number_re.match(phone):
+    if landline_phone_number_pattern.match(phone):
         return True
     return False

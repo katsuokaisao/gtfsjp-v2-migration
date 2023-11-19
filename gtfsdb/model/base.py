@@ -2,7 +2,6 @@ import os
 import time
 import pandas as pd
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import insert
 
 
 class _Base(object):
