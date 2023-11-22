@@ -5,8 +5,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 class _Base(object):
-    def load_table(self, extract_dir, sess, alias):
-        file_path = os.path.join(extract_dir, self.filename)
+    @classmethod
+    def load_table(cls, extract_dir, sess, alias):
+        file_path = os.path.join(extract_dir, cls.filename)
         if not os.path.exists(file_path):
             return
 
@@ -20,7 +21,7 @@ class _Base(object):
         for _, row_series in df.iterrows():
             i += 1
 
-            record = self.make_record(row_series, alias)
+            record = cls.make_record(row_series, alias)
             records.append(record)
 
             if i >= batch_size:
@@ -35,10 +36,11 @@ class _Base(object):
             print("inserted %s records" % len(records))
 
         process_time = time.time() - start_time
-        print("Loaded %s in %s seconds" % (self.__tablename__, process_time))
+        print("Loaded %s in %s seconds" % (cls.__tablename__, process_time))
 
-    def validate_table(self, extract_dir, alias):
-        file_path = os.path.join(extract_dir, self.filename)
+    @classmethod
+    def validate_table(cls, extract_dir, alias):
+        file_path = os.path.join(extract_dir, cls.filename)
         if not os.path.exists(file_path):
             return
 
@@ -47,19 +49,21 @@ class _Base(object):
         df = pd.read_csv(file_path)
 
         for _, row_series in df.iterrows():
-            valid, reason = self.validate_record(row_series, alias)
+            valid, reason = cls.validate_record(row_series, alias)
             if not valid:
                 print("validation error: %s" % reason)
                 print("row series", row_series)
                 raise Exception(reason)
 
         process_time = time.time() - start_time
-        print("Validated %s in %s seconds" % (self.__tablename__, process_time))
+        print("Validated %s in %s seconds" % (cls.__tablename__, process_time))
 
-    def validate_record(self, row_series, alias):
+    @classmethod
+    def validate_record(row_series, alias):
         raise("should implement")
 
-    def make_record(self, row_series, alias):
+    @classmethod
+    def make_record(row_series, alias):
         raise("should implement")
 
 Base = declarative_base(cls=_Base)
