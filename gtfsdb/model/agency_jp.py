@@ -16,7 +16,7 @@ class AgencyJP(Base):
     agency_president_pos = Column(String(50))
     agency_president_name = Column(String(10))
 
-    def validate_record(ow_series, alias):
+    def validate_record(row_series, alias):
         required_columns = ['agency_id']
         for column in required_columns:
             if column not in row_series:
