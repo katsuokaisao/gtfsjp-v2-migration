@@ -19,7 +19,7 @@ class FeedInfo(Base):
     feed_version = Column(String(255))
 
     @classmethod
-    def validate_record(self, row_series, alias):
+    def validate_record(row_series, alias):
         required_columns = ['feed_publisher_name', 'feed_publisher_url', 'feed_lang']
         for column in required_columns:
             if column not in row_series:

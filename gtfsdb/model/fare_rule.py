@@ -19,7 +19,7 @@ class FareRule(Base):
     contains_id = Column(String(255)) # 使用しない
 
     @classmethod
-    def validate_record(self, row_series, alias):
+    def validate_record(row_series, alias):
         required_columns = ['fare_id']
         for column in required_columns:
             if column not in row_series:

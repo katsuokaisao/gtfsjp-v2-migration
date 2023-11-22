@@ -39,7 +39,7 @@ class Agency(Base):
     )
 
     @classmethod
-    def validate_record(self, row_series, alias):
+    def validate_record(row_series, alias):
         required_columns = ['agency_id', 'agency_name', 'agency_url', 'agency_timezone']
         for column in required_columns:
             if column not in row_series:
@@ -98,7 +98,7 @@ class Agency(Base):
         return True, ""
 
     @classmethod
-    def create_instance_from_series(self, row_series, alias):
+    def create_instance_from_series(row_series, alias):
         agency_id = row_series['agency_id']
         agency_name = row_series['agency_name']
         agency_url = row_series['agency_url']

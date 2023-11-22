@@ -9,3 +9,12 @@ def is_valid_yyyymmdd_format(date_string):
         return True
     except ValueError:
         return False
+
+def is_valid_hhmmss_format(time_string):
+    if len(time_string) != 7 and len(time_string) != 8:
+        return False
+    try:
+        datetime.datetime.strptime(time_string, "%H:%M:%S")
+        return True
+    except ValueError:
+        return False

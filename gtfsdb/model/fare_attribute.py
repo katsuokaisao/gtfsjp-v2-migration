@@ -17,7 +17,7 @@ class FareAttribute(Base):
     transfer_duration = Column(Integer)
 
     @classmethod
-    def validate_record(self, row_series, alias):
+    def validate_record(row_series, alias):
         required_columns = ['fare_id', 'price', 'currency_type', 'payment_method', 'transfers']
         for column in required_columns:
             if column not in row_series:

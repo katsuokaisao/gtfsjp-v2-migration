@@ -13,3 +13,30 @@ class RouteJP(Base):
     origin_stop = Column(String(255))
     via_stop = Column(String(255))
     destination_stop = Column(String(255))
+
+    @classmethod
+    def validate_record(row_series, alias):
+        required_columns = ['route_id']
+        for column in required_columns:
+            if column not in row_series:
+                return False, f"column {column} is required"
+            if not row_series[column]:
+                return False, f"column {column} is required"
+
+        return True, None
+
+    @classmethod
+    def create_instance_from_series(row_series, alias):
+        route_id = row_series['route_id']
+        route_update_date = row_series.get('route_update_date', None)
+        origin_stop = row_series.get('origin_stop', None)
+        via_stop = row_series.get('via_stop', None)
+        destination_stop = row_series.get('destination_stop', None)
+
+        return RouteJP(
+            route_id=route_id,
+            route_update_date=route_update_date,
+            origin_stop=origin_stop,
+            via_stop=via_stop,
+            destination_stop=destination_stop,
+        )

@@ -22,7 +22,7 @@ class Calendar(Base):
     end_date = Column(Date, nullable=False)
 
     @classmethod
-    def validate_record(self, row_series, alias):
+    def validate_record(row_series, alias):
         required_columns = ['service_id', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'start_date', 'end_date']
         for column in required_columns:
             if column not in row_series:
