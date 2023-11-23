@@ -1,7 +1,7 @@
 import click
 from db import Database
 from gtfs import Gtfs
-from model_class import target_classes, target_instances
+from model_class import target_classes
 
 
 @click.group()
@@ -33,7 +33,7 @@ def create_table(database_url, drop):
 def migrate(database_url, directory, url):
     db = Database(database_url)
     db.connect()
-    db.set_target_instances(target_instances)
+    db.set_target_classes(target_classes)
     gtfs = Gtfs(directory, url, db)
     gtfs.load()
 
@@ -44,7 +44,7 @@ def migrate(database_url, directory, url):
 def validate(database_url, directory, url):
     db = Database(database_url)
     db.connect()
-    db.set_target_instances(target_instances)
+    db.set_target_classes(target_classes)
     gtfs = Gtfs(directory, url, db)
     gtfs.validate()
 

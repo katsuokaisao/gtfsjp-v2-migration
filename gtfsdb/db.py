@@ -11,7 +11,6 @@ class Database():
         self.engine = None
         self.session_factory = None
         self.target_classes = None
-        self.target_instances = None
         self.alias = {
             "system_agency_id": {},  # {agency_id: system_agency_id}
             "system_service_id": {}, # {service_id: system_service_id}
@@ -26,9 +25,6 @@ class Database():
 
     def set_target_classes(self, target_classes):
         self.target_classes = target_classes
-
-    def set_target_instances(self, target_instances):
-        self.target_instances = target_instances
 
     def connect(self):
         self.engine = create_engine(self.url)
@@ -54,15 +50,15 @@ class Database():
 
         sess = self.new_session()
         try:
-            for target_instance in self.target_instances:
-                target_instance.load_table(extract_dir, sess, self.alias)
+            for target_class in self.target_classes:
+                target_class.load_table(extract_dir, sess, self.alias)
         except Exception as e:
             sess.rollback()
             raise e
 
     def validate_tables(self, extract_dir):
-        for target_instance in self.target_instances:
-            target_instance.validate_table(extract_dir, self.alias)
+        for target_class in self.target_classes:
+            target_class.validate_table(extract_dir, self.alias)
 
     def register_alias(self, extract_dir):
         target_alias_params = [
