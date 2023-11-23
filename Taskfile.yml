@@ -5,7 +5,7 @@ version: '3'
 tasks:
   build:
     cmds:
-      - docker-compose -f docker/docker-compose.yml build
+      - docker-compose -f docker/docker-compose.yml build --no-cache
   up:
     cmds:
       - docker-compose -f docker/docker-compose.yml up -d
@@ -29,6 +29,13 @@ tasks:
       - |
         docker-compose -f docker/docker-compose.yml run gtfsdb \
         pipenv run python gtfsdb/cli.py migrate \
+        -db postgresql://username:password@db:5432/mydatabase \
+        -dir gtfs
+  validate:
+    cmds:
+      - |
+        docker-compose -f docker/docker-compose.yml run gtfsdb \
+        pipenv run python gtfsdb/cli.py validate \
         -db postgresql://username:password@db:5432/mydatabase \
         -dir gtfs
   check-data:
