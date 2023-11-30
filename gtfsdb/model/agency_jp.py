@@ -1,6 +1,9 @@
+from pandas import isna
 from sqlalchemy import Column, Integer, String
 from model.base import Base
+from model.conversion.string import zenkaku_to_hankaku
 from model.validation.address import is_valid_japanese_postal_code
+from model.validation.util import is_required_column, check_nan_or_falsy
 
 
 class AgencyJP(Base):
@@ -19,29 +22,31 @@ class AgencyJP(Base):
     def validate_record(row_series, alias):
         required_columns = ['agency_id']
         for column in required_columns:
-            if column not in row_series:
-                return False, f"column {column} is required"
-            if not row_series[column]:
+            if not is_required_column(row_series, column):
                 return False, f"column {column} is required"
 
         postal_code_columns = ['agency_zip_number']
         for column in postal_code_columns:
-            if column in row_series:
-                postal_code = row_series[column]
-                if postal_code and not is_valid_japanese_postal_code(postal_code):
-                    print(f"column {column} is not valid postal code: {postal_code}")
+            if check_nan_or_falsy(row_series, column):
+                continue
+            postal_code = row_series[column]
+            postal_code = zenkaku_to_hankaku(postal_code)
+            if not postal_code.isdigit():
+                print(f"column {column} is not digit: {postal_code}")
+            if postal_code and not is_valid_japanese_postal_code(postal_code):
+                print(f"column {column} is not valid postal code: {postal_code}")
 
         space_separate_columns = ['agency_president_name']
         for column in space_separate_columns:
-            if column in row_series:
-                name = row_series[column]
-                name_split = name.split("　")
-                if len(name_split) != 2:
-                    print(f"column {column} should not contain zenkaku space: {name}")
+            if check_nan_or_falsy(row_series, column):
+                continue
+            name = row_series[column]
+            name_split = name.split("　")
+            if len(name_split) != 2:
+                print(f"column {column} should be space separated: {name}")
 
         return True, None
 
-    @classmethod
     def create_instance_from_series(row_series, alias):
         agency_id = row_series['agency_id']
         agency_official_name = row_series.get('agency_official_name', None)

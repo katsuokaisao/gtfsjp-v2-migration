@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, SmallInteger
 from model.base import Base
 from model.conversion.string import zenkaku_to_hankaku
 from model.validation.time import is_valid_hhmmss_format
+from model.validation.util import is_required_column
 
 
 class Frequency(Base):
@@ -16,13 +17,10 @@ class Frequency(Base):
     headway_secs = Column(Integer, nullable=False)
     exact_times = Column(SmallInteger) # 0 or 1
 
-    @classmethod
     def validate_record(row_series, alias):
         required_columns = ['trip_id', 'start_time', 'end_time', 'headway_secs']
         for column in required_columns:
-            if column not in row_series:
-                return False, f"column {column} is required"
-            if not row_series[column]:
+            if not is_required_column(row_series, column):
                 return False, f"column {column} is required"
 
         yyyymmdd_format_columns = ['start_time', 'end_time']
@@ -47,7 +45,6 @@ class Frequency(Base):
 
         return True, None
 
-    @classmethod
     def create_instance_from_series(row_series, alias):
         trip_id = row_series['trip_id']
         start_time = row_series['start_time']

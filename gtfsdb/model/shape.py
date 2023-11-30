@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, Numeric, UniqueConstraint, Index
 from model.base import Base
 from model.validation.location import is_valid_longitude, is_valid_latitude
 from model.conversion.string import zenkaku_to_hankaku
+from model.validation.util import is_required_column, check_nan_or_falsy
 
 
 class Shape(Base):
@@ -19,13 +20,10 @@ class Shape(Base):
     shape_pt_sequence = Column(Integer, nullable=False)
     shape_dist_traveled = Column(String(255)) # 使用しない
 
-    @classmethod
     def validate_record(row_series, alias):
         required_columns = ['shape_id', 'shape_pt_lat', 'shape_pt_lon', 'shape_pt_sequence']
         for column in required_columns:
-            if column not in row_series:
-                return False, f"column {column} is required"
-            if not row_series[column]:
+            if not is_required_column(row_series, column):
                 return False, f"column {column} is required"
 
         lat_columns = ['shape_pt_lat']
@@ -51,13 +49,11 @@ class Shape(Base):
 
         unused_columns = ['shape_dist_traveled']
         for column in unused_columns:
-            if column in row_series:
-                if row_series[column]:
-                    return False, f"column {column} is unused"
+            if check_nan_or_falsy(row_series, column):
+                return False, f"column {column} should be unused"
 
         return True, None
 
-    @classmethod
     def create_instance_from_series(row_series, alias):
         shape_id = row_series['shape_id']
         shape_pt_lat = row_series['shape_pt_lat']

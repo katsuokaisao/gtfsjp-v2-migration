@@ -4,6 +4,7 @@ from model.base import Base
 from model.validation.location import is_valid_longitude, is_valid_latitude
 from model.validation.url import is_valid_url
 from model.conversion.string import zenkaku_to_hankaku
+from model.validation.util import is_required_column, check_nan_or_falsy
 
 
 class Stop(Base):
@@ -32,13 +33,10 @@ class Stop(Base):
         uselist=True, viewonly=True
     )
 
-    @classmethod
     def validate_record(row_series, alias):
         required_columns = ['stop_id', 'stop_name', 'stop_lat', 'stop_lon']
         for column in required_columns:
-            if column not in row_series:
-                return False, f"column {column} is required"
-            if not row_series[column]:
+            if not is_required_column(row_series, column):
                 return False, f"column {column} is required"
 
         lat_columns = ['stop_lat']
@@ -57,10 +55,7 @@ class Stop(Base):
 
         url_columns = ['stop_url']
         for column in url_columns:
-            if column not in row_series:
-                continue
-            value = row_series[column]
-            if not value:
+            if check_nan_or_falsy(row_series, column):
                 continue
             value = zenkaku_to_hankaku(value)
             if not is_valid_url(value):
@@ -68,18 +63,17 @@ class Stop(Base):
 
         enum_columns = ['location_type']
         for column in enum_columns:
-            if column not in row_series:
+            if check_nan_or_falsy(row_series, column):
                 continue
             value = row_series[column]
-            if not value:
-                continue
             value = zenkaku_to_hankaku(value)
+            if not value.isdigit():
+                print(f"column {column} should be digit: {value}")
             if value not in ['0', '1']:
                 print(f"column {column} should be 0 or 1: {value}")
 
         return True, None
 
-    @classmethod
     def create_instance_from_series(row_series, alias):
         stop_id = row_series['stop_id']
         stop_code = row_series.get('stop_code', None)

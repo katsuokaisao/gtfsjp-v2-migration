@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, SmallInteger
 from sqlalchemy.orm import relationship
 from model.base import Base
 from model.conversion.string import zenkaku_to_hankaku
+from model.validation.util import is_required_column, check_nan_or_falsy
 
 
 class Trip(Base):
@@ -77,33 +78,29 @@ class Trip(Base):
         lazy="joined", innerjoin=False,
     )
 
-    @classmethod
     def validate_record(row_series, alias):
         required_columns = ['trip_id', 'route_id', 'service_id']
         for column in required_columns:
-            if column not in row_series:
-                return False, f"column {column} is required"
-            if not row_series[column]:
+            if not is_required_column(row_series, column):
                 return False, f"column {column} is required"
 
         digit_columns = ['direction_id', 'wheelchair_accessible', 'bikes_allowed']
         for column in digit_columns:
-            if column in row_series:
-                value = row_series[column]
-                value = zenkaku_to_hankaku(value)
-                if not value.isdigit():
-                    print(f"column {column} should be digit: {value}")
-
-                if column == 'direction_id':
-                    if value not in ['0', '1']:
-                        print(f"column {column} should be 0 or 1: {value}")
-                else:
-                    if value not in ['0', '1', '2']:
-                        print(f"column {column} should be 0, 1 or 2: {value}")
+            if check_nan_or_falsy(row_series, column):
+                continue
+            value = row_series[column]
+            value = zenkaku_to_hankaku(value)
+            if not value.isdigit():
+                print(f"column {column} should be digit: {value}")
+            if column == 'direction_id':
+                if value not in ['0', '1']:
+                    print(f"column {column} should be 0 or 1: {value}")
+            else:
+                if value not in ['0', '1', '2']:
+                    print(f"column {column} should be 0, 1 or 2: {value}")
 
         return True, None
 
-    @classmethod
     def create_instance_from_series(row_series, alias):
         trip_id = row_series['trip_id']
         route_id = row_series['route_id']

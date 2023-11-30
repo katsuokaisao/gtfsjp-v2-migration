@@ -4,6 +4,7 @@ from model.base import Base
 from model.validation.url import is_valid_url
 from model.validation.color import is_valid_color
 from model.conversion.string import zenkaku_to_hankaku
+from model.validation.util import is_required_column, check_nan_or_falsy
 
 
 class Route(Base):
@@ -39,13 +40,10 @@ class Route(Base):
         lazy="joined", innerjoin=True,
     )
 
-    @classmethod
     def validate_record(row_series, alias):
         required_columns = ['route_id', 'agency_id', 'route_type']
         for column in required_columns:
-            if column not in row_series:
-                return False, f"column {column} is required"
-            if not row_series[column]:
+            if not is_required_column(row_series, column):
                 return False, f"column {column} is required"
 
         route_short_name = row_series.get('route_short_name', None)
@@ -62,26 +60,24 @@ class Route(Base):
 
         url_columns = ['route_url']
         for column in url_columns:
-            if column in row_series:
-                url = row_series[column]
-                if url:
-                    url = zenkaku_to_hankaku(url)
-                    if not is_valid_url(url):
-                        print(f"column {column} should be url: {url}")
+            if check_nan_or_falsy(row_series, column):
+                continue
+            url = row_series[column]
+            url = zenkaku_to_hankaku(url)
+            if not is_valid_url(url):
+                print(f"column {column} should be url: {url}")
 
         color_columns = ['route_color', 'route_text_color']
         for column in color_columns:
-            if column in row_series:
-                color = row_series[column]
-                if color:
-                    color = zenkaku_to_hankaku(color)
-                    if is_valid_color(color):
-                        print(f"column {column} should be color code: {color}")
-
+            if check_nan_or_falsy(row_series, column):
+                continue
+            color = row_series[column]
+            color = zenkaku_to_hankaku(color)
+            if not is_valid_color(color):
+                print(f"column {column} should be color code: {color}")
 
         return True, None
 
-    @classmethod
     def create_instance_from_series(row_series, alias):
         route_id = row_series['route_id']
         agency_id = row_series['agency_id']

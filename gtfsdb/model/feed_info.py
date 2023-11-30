@@ -5,6 +5,7 @@ from model.validation.url import is_valid_url
 from model.validation.lang import is_valid_language_code
 from model.validation.time import is_valid_yyyymmdd_format
 from model.conversion.string import zenkaku_to_hankaku
+from model.validation.util import is_required_column, check_nan_or_falsy
 
 class FeedInfo(Base):
     filename = 'feed_info.txt'
@@ -18,13 +19,10 @@ class FeedInfo(Base):
     feed_end_date = Column(Date) # YYYYMMDD
     feed_version = Column(String(255))
 
-    @classmethod
     def validate_record(row_series, alias):
         required_columns = ['feed_publisher_name', 'feed_publisher_url', 'feed_lang']
         for column in required_columns:
-            if column not in row_series:
-                return False, f"column {column} is required"
-            if not row_series[column]:
+            if not is_required_column(row_series, column):
                 return False, f"column {column} is required"
 
         url_columns = ['feed_publisher_url']
@@ -42,11 +40,12 @@ class FeedInfo(Base):
 
         yyyymmdd_format_columns = ['feed_start_date', 'feed_end_date']
         for column in yyyymmdd_format_columns:
+            if check_nan_or_falsy(row_series, column):
+                continue
             date = row_series[column]
-            if date:
-                date = zenkaku_to_hankaku(date)
-                if not is_valid_yyyymmdd_format(date):
-                    print(f"column {column} is not valid yyyymmdd format: {date}")
+            date = zenkaku_to_hankaku(date)
+            if not is_valid_yyyymmdd_format(date):
+                return False, f"column {column} is not valid yyyymmdd format: {date}"
 
         if 'feed_start_date' in row_series and 'feed_end_date' in row_series:
             feed_start_date = row_series['feed_start_date']
@@ -61,7 +60,6 @@ class FeedInfo(Base):
 
         return True, None
 
-    @classmethod
     def create_instance_from_series(row_series, alias):
         feed_publisher_name = row_series['feed_publisher_name']
         feed_publisher_url = row_series['feed_publisher_url']

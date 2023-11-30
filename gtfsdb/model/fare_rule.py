@@ -1,5 +1,6 @@
 from sqlalchemy import Column, String, Integer, Index
 from model.base import Base
+from model.validation.util import is_required_column, check_nan_or_falsy
 
 
 class FareRule(Base):
@@ -18,22 +19,14 @@ class FareRule(Base):
     destination_id = Column(String(255))
     contains_id = Column(String(255)) # 使用しない
 
-    @classmethod
     def validate_record(row_series, alias):
         required_columns = ['fare_id']
         for column in required_columns:
-            if column not in row_series:
+            if not is_required_column(row_series, column):
                 return False, f"column {column} is required"
-            if not row_series[column]:
-                return False, f"column {column} is required"
-
-        if 'contains_id' in row_series:
-            if row_series['contains_id']:
-                print(f"column contains_id is not used: {row_series['contains_id']}")
 
         return True, None
 
-    @classmethod
     def create_instance_from_series(row_series, alias):
         fare_id = row_series['fare_id']
         route_id = row_series.get('route_id', None)

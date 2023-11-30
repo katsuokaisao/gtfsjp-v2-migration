@@ -3,6 +3,7 @@ from sqlalchemy import Column, String, Integer, Date, SmallInteger
 from model.base import Base
 from model.conversion.string import zenkaku_to_hankaku
 from model.validation.time import is_valid_yyyymmdd_format
+from model.validation.util import is_required_column
 
 class Calendar(Base):
     filename = 'calendar.txt'
@@ -21,19 +22,18 @@ class Calendar(Base):
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
 
-    @classmethod
     def validate_record(row_series, alias):
         required_columns = ['service_id', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'start_date', 'end_date']
         for column in required_columns:
-            if column not in row_series:
-                return False, f"column {column} is required"
-            if not row_series[column]:
+            if not is_required_column(row_series, column):
                 return False, f"column {column} is required"
 
         enum_columns = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
         for column in enum_columns:
             enabled = row_series[column]
             enabled = zenkaku_to_hankaku(enabled)
+            if not enabled.isdigit():
+                return False, f"column {column} should be digit: {enabled}"
             if enabled not in ['0', '1']:
                 return False, f"column {column} should be 0 or 1"
 
@@ -46,7 +46,6 @@ class Calendar(Base):
 
         return True, None
 
-    @classmethod
     def create_instance_from_series(row_series, alias):
         service_id = row_series['service_id']
         monday = row_series['monday']

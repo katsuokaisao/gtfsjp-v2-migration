@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, SmallInteger
 from model.base import Base
 from model.conversion.string import zenkaku_to_hankaku
 from model.validation.currency import is_valid_currency_code
+from model.validation.util import is_required_column, check_nan_or_falsy
 
 class FareAttribute(Base):
     filename = 'fare_attributes.txt'
@@ -16,13 +17,10 @@ class FareAttribute(Base):
     transfers = Column(SmallInteger, nullable=False) # 0,1,2,3(空白)
     transfer_duration = Column(Integer)
 
-    @classmethod
     def validate_record(row_series, alias):
         required_columns = ['fare_id', 'price', 'currency_type', 'payment_method', 'transfers']
         for column in required_columns:
-            if column not in row_series:
-                return False, f"column {column} is required"
-            if not row_series[column]:
+            if not is_required_column(row_series, column):
                 return False, f"column {column} is required"
 
         price = row_series['price']
@@ -46,21 +44,19 @@ class FareAttribute(Base):
         transfers = row_series['transfers']
         transfers = zenkaku_to_hankaku(transfers)
         if transfers not in ['0', '1', '2', '']:
-            return False, f"column transfers should be 0, 1, 2, 3"
+            return False, f"column transfers should be 0, 1, 2, or empty string"
 
-        if 'transfer_duration' in row_series:
+        if not check_nan_or_falsy(row_series, 'transfer_duration'):
             transfer_duration = row_series['transfer_duration']
-            if transfer_duration:
-                transfer_duration = zenkaku_to_hankaku(transfer_duration)
-                if not transfer_duration.isdigit():
-                    print(f"column transfer_duration should be integer: {transfer_duration}")
-                transfer_duration = int(transfer_duration)
-                if transfer_duration < 0:
-                    print(f"column transfer_duration should be positive integer: {transfer_duration}")
+            transfer_duration = zenkaku_to_hankaku(transfer_duration)
+            if not transfer_duration.isdigit():
+                print(f"column transfer_duration should be integer: {transfer_duration}")
+            transfer_duration = int(transfer_duration)
+            if transfer_duration < 0:
+                print(f"column transfer_duration should be positive integer: {transfer_duration}")
 
         return True, None
 
-    @classmethod
     def create_instance_from_series(row_series, alias):
         fare_id = row_series['fare_id']
         price = row_series['price']

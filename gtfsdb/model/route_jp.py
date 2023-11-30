@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from model.base import Base
+from model.validation.util import is_required_column
 
 
 class RouteJP(Base):
@@ -14,18 +15,14 @@ class RouteJP(Base):
     via_stop = Column(String(255))
     destination_stop = Column(String(255))
 
-    @classmethod
     def validate_record(row_series, alias):
         required_columns = ['route_id']
         for column in required_columns:
-            if column not in row_series:
-                return False, f"column {column} is required"
-            if not row_series[column]:
+            if not is_required_column(row_series, column):
                 return False, f"column {column} is required"
 
         return True, None
 
-    @classmethod
     def create_instance_from_series(row_series, alias):
         route_id = row_series['route_id']
         route_update_date = row_series.get('route_update_date', None)

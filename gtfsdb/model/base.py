@@ -13,7 +13,7 @@ class _Base(object):
 
         start_time = time.time()
 
-        df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path, dtype = 'object')
 
         batch_size = 10000
         i = 0
@@ -46,7 +46,7 @@ class _Base(object):
 
         start_time = time.time()
 
-        df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path, dtype = 'object')
 
         for _, row_series in df.iterrows():
             valid, reason = cls.validate_record(row_series, alias)
