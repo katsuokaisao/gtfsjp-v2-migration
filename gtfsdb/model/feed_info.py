@@ -19,7 +19,7 @@ class FeedInfo(Base):
     feed_end_date = Column(Date) # YYYYMMDD
     feed_version = Column(String(255))
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['feed_publisher_name', 'feed_publisher_url', 'feed_lang']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -60,7 +60,7 @@ class FeedInfo(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         feed_publisher_name = row_series['feed_publisher_name']
         feed_publisher_url = row_series['feed_publisher_url']
         feed_lang = row_series['feed_lang']

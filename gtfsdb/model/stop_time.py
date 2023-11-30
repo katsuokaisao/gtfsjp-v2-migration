@@ -11,11 +11,9 @@ class StopTime(Base):
     __tablename__ = 'stop_times'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    system_trip_id = Column(Integer, index=True, nullable=False)
     trip_id = Column(String(255), nullable=False)
     arrival_time = Column(String(9), nullable=False) # 00:00:00
     departure_time = Column(String(9), nullable=False) # 00:00:00
-    system_stop_id = Column(Integer, index=True, nullable=False)
     stop_id = Column(String(255), nullable=False)
     stop_sequence = Column(Integer, nullable=False)
     stop_headsign = Column(String(255))
@@ -26,19 +24,19 @@ class StopTime(Base):
 
     stop = relationship(
         'Stop',
-        primaryjoin='StopTime.system_stop_id == Stop.id',
-        foreign_keys='(StopTime.system_stop_id)',
+        primaryjoin='StopTime.stop_id == Stop.id',
+        foreign_keys='(StopTime.stop_id)',
         uselist=False, viewonly=True
     )
 
     trip = relationship(
         'Trip',
-        primaryjoin='StopTime.system_trip_id == Trip.id',
-        foreign_keys='(StopTime.system_trip_id)',
+        primaryjoin='StopTime.trip_id == Trip.trip_id',
+        foreign_keys='(StopTime.trip_id)',
         uselist=False, viewonly=True
     )
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['trip_id', 'arrival_time', 'departure_time', 'stop_id', 'stop_sequence']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -63,7 +61,7 @@ class StopTime(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         trip_id = row_series['trip_id']
         arrival_time = row_series['arrival_time']
         departure_time = row_series['departure_time']

@@ -16,7 +16,7 @@ class Translation(Base):
     lang = Column(String(10), nullable=False)
     translation = Column(String(255), nullable=False)
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['trans_id', 'lang', 'translation']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -30,7 +30,7 @@ class Translation(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         trans_id = row_series['trans_id']
         lang = row_series['lang']
         translation = row_series['translation']

@@ -10,7 +10,6 @@ class Calendar(Base):
     __tablename__ = 'calendars'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    system_service_id = Column(Integer, index=True, nullable=False)
     service_id = Column(String(255), unique=True, index=True, nullable=False)
     monday = Column(SmallInteger, nullable=False)
     tuesday = Column(SmallInteger, nullable=False)
@@ -22,7 +21,7 @@ class Calendar(Base):
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['service_id', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'start_date', 'end_date']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -46,7 +45,7 @@ class Calendar(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         service_id = row_series['service_id']
         monday = row_series['monday']
         tuesday = row_series['tuesday']
@@ -78,10 +77,7 @@ class Calendar(Base):
         end_date = zenkaku_to_hankaku(end_date)
         end_date = datetime.datetime.strptime(end_date, '%Y%m%d')
 
-        system_service_id = alias['system_service_id'].get(service_id, None)
-
         return Calendar(
-            system_service_id=system_service_id,
             service_id=service_id,
             monday=monday,
             tuesday=tuesday,

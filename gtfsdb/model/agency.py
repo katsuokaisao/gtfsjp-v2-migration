@@ -26,21 +26,21 @@ class Agency(Base):
 
     routes = relationship(
         'Route',
-        primaryjoin='Agency.id==Route.system_agency_id',
-        foreign_keys='(Agency.id)',
+        primaryjoin='Agency.agency_id==Route.agency_id',
+        foreign_keys='(Agency.agency_id)',
         uselist=True, viewonly=True,
         lazy="joined", innerjoin=True,
     )
 
     agency_jp = relationship(
         'AgencyJP',
-        primaryjoin='Agency.id==AgencyJP.system_agency_id',
-        foreign_keys='(Agency.id)',
+        primaryjoin='Agency.agency_id==AgencyJP.agency_id',
+        foreign_keys='(Agency.agency_id)',
         uselist=False, viewonly=True,
         lazy="joined", innerjoin=True,
     )
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['agency_id', 'agency_name', 'agency_url', 'agency_timezone']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -95,7 +95,7 @@ class Agency(Base):
 
         return True, ""
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         agency_id = row_series['agency_id']
         agency_name = row_series['agency_name']
         agency_url = row_series['agency_url']

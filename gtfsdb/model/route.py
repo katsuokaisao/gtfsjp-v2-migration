@@ -13,7 +13,6 @@ class Route(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     route_id = Column(String(255), unique=True, index=True, nullable=False)
-    system_agency_id = Column(Integer, index=True, nullable=False)
     agency_id = Column(String(255), nullable=False)
     route_short_name = Column(String(255)) # route_short_name or route_long_name must be specified
     route_long_name = Column(String(255))  # route_short_name or route_long_name must be specified
@@ -26,21 +25,21 @@ class Route(Base):
 
     route_jp = relationship(
         'RouteJP',
-        primaryjoin='Route.id==RouteJP.system_route_id',
-        foreign_keys='(Route.id)',
+        primaryjoin='Route.route_id==RouteJP.route_id',
+        foreign_keys='(Route.route_id)',
         uselist=False, viewonly=True,
         lazy="joined", innerjoin=True,
     )
 
     trips = relationship(
         'Trip',
-        primaryjoin='Route.id==Trip.system_route_id',
-        foreign_keys='(Route.id)',
+        primaryjoin='Route.route_id==Trip.route_id',
+        foreign_keys='(Route.route_id)',
         uselist=True, viewonly=True,
         lazy="joined", innerjoin=True,
     )
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['route_id', 'agency_id', 'route_type']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -78,7 +77,7 @@ class Route(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         route_id = row_series['route_id']
         agency_id = row_series['agency_id']
         route_type = row_series['route_type']

@@ -9,7 +9,6 @@ class FareAttribute(Base):
     __tablename__ = 'fare_attributes'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    system_fare_id = Column(Integer, index=True, nullable=False)
     fare_id = Column(String(255), index=True, nullable=False)
     price = Column(Integer, nullable=False)
     currency_type = Column(String(10), nullable=False) # JPY
@@ -17,7 +16,7 @@ class FareAttribute(Base):
     transfers = Column(SmallInteger, nullable=False) # 0,1,2,3(空白)
     transfer_duration = Column(Integer)
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['fare_id', 'price', 'currency_type', 'payment_method', 'transfers']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -57,7 +56,7 @@ class FareAttribute(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         fare_id = row_series['fare_id']
         price = row_series['price']
         currency_type = row_series['currency_type']
@@ -83,10 +82,7 @@ class FareAttribute(Base):
             transfer_duration = zenkaku_to_hankaku(transfer_duration)
             transfer_duration = int(transfer_duration)
 
-        system_fare_id = alias['system_fare_id'].get(fare_id, None)
-
         return FareAttribute(
-            system_fare_id=system_fare_id,
             fare_id=fare_id,
             price=price,
             currency_type=currency_type,

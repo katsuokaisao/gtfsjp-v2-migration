@@ -10,14 +10,13 @@ class Frequency(Base):
     __tablename__ = 'frequencies'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    system_trip_id = Column(Integer, index=True, nullable=False)
     trip_id = Column(String(255), nullable=False)
     start_time = Column(String(8), nullable=False)
     end_time = Column(String(8), nullable=False)
     headway_secs = Column(Integer, nullable=False)
     exact_times = Column(SmallInteger) # 0 or 1
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['trip_id', 'start_time', 'end_time', 'headway_secs']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -45,7 +44,7 @@ class Frequency(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         trip_id = row_series['trip_id']
         start_time = row_series['start_time']
         end_time = row_series['end_time']

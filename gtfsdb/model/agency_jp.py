@@ -11,7 +11,6 @@ class AgencyJP(Base):
     __tablename__ = 'agency_jps'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    system_agency_id = Column(Integer, unique=True, nullable=False)
     agency_id = Column(String(255), unique=True, nullable=False)
     agency_official_name = Column(String(255))
     agency_zip_number = Column(Integer)
@@ -19,7 +18,7 @@ class AgencyJP(Base):
     agency_president_pos = Column(String(50))
     agency_president_name = Column(String(10))
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['agency_id']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -47,7 +46,7 @@ class AgencyJP(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         agency_id = row_series['agency_id']
         agency_official_name = row_series.get('agency_official_name', None)
         agency_zip_number = row_series.get('agency_zip_number', None)
@@ -57,10 +56,7 @@ class AgencyJP(Base):
 
         agency_zip_number = int(agency_zip_number) if agency_zip_number else None
 
-        system_agency_id = alias['system_agency_id'].get(agency_id, None)
-
         return AgencyJP(
-            system_agency_id=system_agency_id,
             agency_id=agency_id,
             agency_official_name=agency_official_name,
             agency_zip_number=agency_zip_number,

@@ -8,6 +8,7 @@ from model.feed_info import FeedInfo
 from model.frequency import Frequency
 from model.office_jp import OfficeJP
 from model.route import Route
+from model.route_jp import RouteJP
 from model.shape import Shape
 from model.stop_time import StopTime
 from model.stop import Stop
@@ -27,6 +28,7 @@ target_classes = [
     Frequency,
     OfficeJP,
     Route,
+    RouteJP,
     Shape,
     StopTime,
     Stop,

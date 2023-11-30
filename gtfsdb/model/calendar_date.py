@@ -11,12 +11,11 @@ class CalendarDate(Base):
     __tablename__ = 'calendar_dates'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    system_service_id = Column(Integer, index=True, nullable=False)
     service_id = Column(String(255), unique=True, index=True, nullable=False)
     date = Column(Date,  index=True, nullable=False) # YYYYMMDD
     exception_type = Column(SmallInteger, nullable=False) # 1 or 2
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['service_id', 'date', 'exception_type']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -40,7 +39,7 @@ class CalendarDate(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         service_id = row_series['service_id']
         date = row_series['date']
         exception_type = row_series['exception_type']
@@ -51,10 +50,7 @@ class CalendarDate(Base):
         exception_type = zenkaku_to_hankaku(exception_type)
         exception_type = int(exception_type)
 
-        system_service_id = alias['system_service_id'].get(service_id, None)
-
         return CalendarDate(
-            system_service_id=system_service_id,
             service_id=service_id,
             date=date,
             exception_type=exception_type,

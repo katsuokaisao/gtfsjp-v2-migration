@@ -16,7 +16,7 @@ class OfficeJP(Base):
     office_url = Column(String(255))
     office_phone = Column(String(50))
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['office_id', 'office_name']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -42,7 +42,7 @@ class OfficeJP(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         office_id = row_series['office_id']
         office_name = row_series['office_name']
         office_url = row_series.get('office_url', None)

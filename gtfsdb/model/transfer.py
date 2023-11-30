@@ -14,12 +14,10 @@ class Transfer(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     from_stop_id = Column(String(255), nullable=False)
     to_stop_id = Column(String(255), nullable=False)
-    system_from_stop_id = Column(Integer, nullable=False)
-    system_to_stop_id = Column(Integer, nullable=False)
     transfer_type = Column(Integer, nullable=False) # 0,1,2,3
     min_transfer_time = Column(Integer) # s
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['from_stop_id', 'to_stop_id', 'transfer_type']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -40,7 +38,7 @@ class Transfer(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         from_stop_id = row_series['from_stop_id']
         to_stop_id = row_series['to_stop_id']
         transfer_type = row_series['transfer_type']

@@ -20,7 +20,7 @@ class Shape(Base):
     shape_pt_sequence = Column(Integer, nullable=False)
     shape_dist_traveled = Column(String(255)) # 使用しない
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['shape_id', 'shape_pt_lat', 'shape_pt_lon', 'shape_pt_sequence']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -54,7 +54,7 @@ class Shape(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         shape_id = row_series['shape_id']
         shape_pt_lat = row_series['shape_pt_lat']
         shape_pt_lon = row_series['shape_pt_lon']

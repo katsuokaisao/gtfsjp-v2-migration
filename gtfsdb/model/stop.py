@@ -28,12 +28,12 @@ class Stop(Base):
 
     stop_times = relationship(
         'StopTime',
-        primaryjoin='Stop.id == StopTime.system_stop_id',
-        foreign_keys='(Stop.id)',
+        primaryjoin='Stop.stop_id == StopTime.stop_id',
+        foreign_keys='(Stop.stop_id)',
         uselist=True, viewonly=True
     )
 
-    def validate_record(row_series, alias):
+    def validate_record(row_series):
         required_columns = ['stop_id', 'stop_name', 'stop_lat', 'stop_lon']
         for column in required_columns:
             if not is_required_column(row_series, column):
@@ -74,7 +74,7 @@ class Stop(Base):
 
         return True, None
 
-    def create_instance_from_series(row_series, alias):
+    def create_instance_from_series(row_series):
         stop_id = row_series['stop_id']
         stop_code = row_series.get('stop_code', None)
         stop_name = row_series['stop_name']
