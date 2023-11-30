@@ -21,7 +21,7 @@ class _Base(object):
         for _, row_series in df.iterrows():
             i += 1
 
-            record = cls.make_record(row_series, alias)
+            record = cls.create_instance_from_series(row_series, alias)
             records.append(record)
 
             if i >= batch_size:
@@ -63,7 +63,7 @@ class _Base(object):
         raise("should implement")
 
     @classmethod
-    def make_record(row_series, alias):
+    def create_instance_from_series(row_series, alias):
         raise("should implement")
 
 Base = declarative_base(cls=_Base)
