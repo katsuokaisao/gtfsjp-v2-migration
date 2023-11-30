@@ -23,7 +23,7 @@ tasks:
       - |
         docker-compose -f docker/docker-compose.yml run gtfsdb \
         pipenv run python gtfsdb/cli.py create-table \
-        -db postgresql://username:password@db:5432/mydatabase
+        -db postgresql://username:password@db:5432/mydatabase --drop=true
   migrate:
     cmds:
       - |

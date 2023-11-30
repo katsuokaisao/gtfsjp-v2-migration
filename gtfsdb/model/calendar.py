@@ -10,7 +10,7 @@ class Calendar(Base):
     __tablename__ = 'calendars'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    service_id = Column(String(255), unique=True, index=True, nullable=False)
+    service_id = Column(String(255), index=True, nullable=False)
     monday = Column(SmallInteger, nullable=False)
     tuesday = Column(SmallInteger, nullable=False)
     wednesday = Column(SmallInteger, nullable=False)

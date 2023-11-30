@@ -7,6 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 class _Base(object):
     @classmethod
     def load_table(cls, extract_dir, sess):
+        print("Loading %s" % cls.__tablename__)
         file_path = os.path.join(extract_dir, cls.filename)
         if not os.path.exists(file_path):
             return
