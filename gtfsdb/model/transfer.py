@@ -42,7 +42,7 @@ class Transfer(Base):
         from_stop_id = row_series['from_stop_id']
         to_stop_id = row_series['to_stop_id']
         transfer_type = row_series['transfer_type']
-        min_transfer_time = row_series.get('min_transfer_time', None)
+        min_transfer_time = None if check_nan_or_falsy(row_series, 'min_transfer_time') else row_series['min_transfer_time']
 
         transfer_type = zenkaku_to_hankaku(transfer_type)
         transfer_type = int(transfer_type)

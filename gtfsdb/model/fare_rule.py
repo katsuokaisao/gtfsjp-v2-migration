@@ -27,10 +27,10 @@ class FareRule(Base):
 
     def create_instance_from_series(row_series):
         fare_id = row_series['fare_id']
-        route_id = row_series.get('route_id', None)
-        origin_id = row_series.get('origin_id', None)
-        destination_id = row_series.get('destination_id', None)
-        contains_id = row_series.get('contains_id', None)
+        route_id = None if check_nan_or_falsy(row_series, 'route_id') else row_series['route_id']
+        origin_id = None if check_nan_or_falsy(row_series, 'origin_id') else row_series['origin_id']
+        destination_id = None if check_nan_or_falsy(row_series, 'destination_id') else row_series['destination_id']
+        contains_id = None if check_nan_or_falsy(row_series, 'contains_id') else row_series['contains_id']
 
         return FareRule(
             fare_id=fare_id,

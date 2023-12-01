@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from model.base import Base
-from model.validation.util import is_required_column
+from model.validation.util import is_required_column, check_nan_or_falsy
 
 
 class RouteJP(Base):
@@ -24,10 +24,10 @@ class RouteJP(Base):
 
     def create_instance_from_series(row_series):
         route_id = row_series['route_id']
-        route_update_date = row_series.get('route_update_date', None)
-        origin_stop = row_series.get('origin_stop', None)
-        via_stop = row_series.get('via_stop', None)
-        destination_stop = row_series.get('destination_stop', None)
+        route_update_date = None if check_nan_or_falsy(row_series, 'route_update_date') else row_series['route_update_date']
+        origin_stop = None if check_nan_or_falsy(row_series, 'origin_stop') else row_series['origin_stop']
+        via_stop = None if check_nan_or_falsy(row_series, 'via_stop') else row_series['via_stop']
+        destination_stop = None if check_nan_or_falsy(row_series, 'destination_stop') else row_series['destination_stop']
 
         return RouteJP(
             route_id=route_id,

@@ -82,13 +82,13 @@ class Route(Base):
         agency_id = row_series['agency_id']
         route_type = row_series['route_type']
 
-        route_short_name = row_series.get('route_short_name', None)
-        route_long_name = row_series.get('route_long_name', None)
-        route_desc = row_series.get('route_desc', None)
-        route_url = row_series.get('route_url', None)
-        route_color = row_series.get('route_color', None)
-        route_text_color = row_series.get('route_text_color', None)
-        jp_parent_route_id = row_series.get('jp_parent_route_id', None)
+        route_short_name = None if check_nan_or_falsy(row_series, 'route_short_name') else row_series['route_short_name']
+        route_long_name = None if check_nan_or_falsy(row_series, 'route_long_name') else row_series['route_long_name']
+        route_desc = None if check_nan_or_falsy(row_series, 'route_desc') else row_series['route_desc']
+        route_url = None if check_nan_or_falsy(row_series, 'route_url') else row_series['route_url']
+        route_color = None if check_nan_or_falsy(row_series, 'route_color') else row_series['route_color']
+        route_text_color = None if check_nan_or_falsy(row_series, 'route_text_color') else row_series['route_text_color']
+        jp_parent_route_id = None if check_nan_or_falsy(row_series, 'jp_parent_route_id') else row_series['jp_parent_route_id']
 
         route_type = int(zenkaku_to_hankaku(route_type))
 

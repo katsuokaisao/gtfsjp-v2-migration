@@ -67,11 +67,11 @@ class StopTime(Base):
         departure_time = row_series['departure_time']
         stop_id = row_series['stop_id']
         stop_sequence = row_series['stop_sequence']
-        stop_headsign = row_series.get('stop_headsign', None)
-        pickup_type = row_series.get('pickup_type', None)
-        drop_off_type = row_series.get('drop_off_type', None)
-        shape_dist_traveled = row_series.get('shape_dist_traveled', None)
-        timepoint = row_series.get('timepoint', None)
+        stop_headsign = None if check_nan_or_falsy(row_series, 'stop_headsign') else row_series['stop_headsign']
+        pickup_type = None if check_nan_or_falsy(row_series, 'pickup_type') else row_series['pickup_type']
+        drop_off_type = None if check_nan_or_falsy(row_series, 'drop_off_type') else row_series['drop_off_type']
+        shape_dist_traveled = None if check_nan_or_falsy(row_series, 'shape_dist_traveled') else row_series['shape_dist_traveled']
+        timepoint = None if check_nan_or_falsy(row_series, 'timepoint') else row_series['timepoint']
 
         arrival_time = zenkaku_to_hankaku(arrival_time)
         departure_time = zenkaku_to_hankaku(departure_time)

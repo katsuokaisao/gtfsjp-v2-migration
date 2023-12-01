@@ -48,11 +48,11 @@ class AgencyJP(Base):
 
     def create_instance_from_series(row_series):
         agency_id = row_series['agency_id']
-        agency_official_name = row_series.get('agency_official_name', None)
-        agency_zip_number = row_series.get('agency_zip_number', None)
-        agency_address = row_series.get('agency_address', None)
-        agency_president_pos = row_series.get('agency_president_pos', None)
-        agency_president_name = row_series.get('agency_president_name', None)
+        agency_official_name = None if check_nan_or_falsy(row_series, 'agency_official_name') else row_series['agency_official_name']
+        agency_zip_number = None if check_nan_or_falsy(row_series, 'agency_zip_number') else row_series['agency_zip_number']
+        agency_address = None if check_nan_or_falsy(row_series, 'agency_address') else row_series['agency_address']
+        agency_president_pos = None if check_nan_or_falsy(row_series, 'agency_president_pos') else row_series['agency_president_pos']
+        agency_president_name = None if check_nan_or_falsy(row_series, 'agency_president_name') else row_series['agency_president_name']
 
         agency_zip_number = int(agency_zip_number) if agency_zip_number else None
 

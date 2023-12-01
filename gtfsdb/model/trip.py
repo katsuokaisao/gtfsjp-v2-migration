@@ -101,13 +101,14 @@ class Trip(Base):
         trip_id = row_series['trip_id']
         route_id = row_series['route_id']
         service_id = row_series['service_id']
-        trip_headsign = row_series.get('trip_headsign', None)
-        trip_short_name = row_series.get('trip_short_name', None)
-        direction_id = row_series.get('direction_id', None)
-        block_id = row_series.get('block_id', None)
-        shape_id = row_series.get('shape_id', None)
-        wheelchair_accessible = row_series.get('wheelchair_accessible', None)
-        bikes_allowed = row_series.get('bikes_allowed', None)
+
+        trip_headsign = None if check_nan_or_falsy(row_series, 'trip_headsign') else row_series['trip_headsign']
+        trip_short_name = None if check_nan_or_falsy(row_series, 'trip_short_name') else row_series['trip_short_name']
+        direction_id = None if check_nan_or_falsy(row_series, 'direction_id') else row_series['direction_id']
+        block_id = None if check_nan_or_falsy(row_series, 'block_id') else row_series['block_id']
+        shape_id = None if check_nan_or_falsy(row_series, 'shape_id') else row_series['shape_id']
+        wheelchair_accessible = None if check_nan_or_falsy(row_series, 'wheelchair_accessible') else row_series['wheelchair_accessible']
+        bikes_allowed = None if check_nan_or_falsy(row_series, 'bikes_allowed') else row_series['bikes_allowed']
 
         direction_id = int(direction_id) if direction_id else None
         wheelchair_accessible = int(wheelchair_accessible) if wheelchair_accessible else None

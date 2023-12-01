@@ -76,18 +76,19 @@ class Stop(Base):
 
     def create_instance_from_series(row_series):
         stop_id = row_series['stop_id']
-        stop_code = row_series.get('stop_code', None)
         stop_name = row_series['stop_name']
-        stop_desc = row_series.get('stop_desc', None)
         stop_lat = row_series['stop_lat']
         stop_lon = row_series['stop_lon']
-        zone_id = row_series.get('zone_id', None)
-        stop_url = row_series.get('stop_url', None)
-        location_type = row_series.get('location_type', None)
-        parent_station = row_series.get('parent_station', None)
-        stop_timezone = row_series.get('stop_timezone', None)
-        wheelchair_boarding = row_series.get('wheelchair_boarding', None)
-        platform_code = row_series.get('platform_code', None)
+
+        stop_code = None if check_nan_or_falsy(row_series, 'stop_code') else row_series['stop_code']
+        stop_desc = None if check_nan_or_falsy(row_series, 'stop_desc') else row_series['stop_desc']
+        zone_id = None if check_nan_or_falsy(row_series, 'zone_id') else row_series['zone_id']
+        stop_url = None if check_nan_or_falsy(row_series, 'stop_url') else row_series['stop_url']
+        location_type = None if check_nan_or_falsy(row_series, 'location_type') else row_series['location_type']
+        parent_station = None if check_nan_or_falsy(row_series, 'parent_station') else row_series['parent_station']
+        stop_timezone = None if check_nan_or_falsy(row_series, 'stop_timezone') else row_series['stop_timezone']
+        wheelchair_boarding = None if check_nan_or_falsy(row_series, 'wheelchair_boarding') else row_series['wheelchair_boarding']
+        platform_code = None if check_nan_or_falsy(row_series, 'platform_code') else row_series['platform_code']
 
         stop_lat = zenkaku_to_hankaku(stop_lat)
         stop_lon = zenkaku_to_hankaku(stop_lon)
@@ -98,7 +99,8 @@ class Stop(Base):
             location_type = zenkaku_to_hankaku(location_type)
             location_type = int(location_type)
 
-        stop_url = zenkaku_to_hankaku(stop_url)
+        if stop_url:
+            stop_url = zenkaku_to_hankaku(stop_url)
 
         return Stop(
             stop_id=stop_id,

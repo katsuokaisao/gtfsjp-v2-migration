@@ -59,7 +59,7 @@ class Shape(Base):
         shape_pt_lat = row_series['shape_pt_lat']
         shape_pt_lon = row_series['shape_pt_lon']
         shape_pt_sequence = row_series['shape_pt_sequence']
-        shape_dist_traveled = row_series.get('shape_dist_traveled', None)
+        shape_dist_traveled = None if check_nan_or_falsy(row_series, 'shape_dist_traveled') else row_series['shape_dist_traveled']
 
         shape_pt_lat = zenkaku_to_hankaku(shape_pt_lat)
         shape_pt_lon = zenkaku_to_hankaku(shape_pt_lon)

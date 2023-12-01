@@ -62,7 +62,7 @@ class FareAttribute(Base):
         currency_type = row_series['currency_type']
         payment_method = row_series['payment_method']
         transfers = row_series['transfers']
-        transfer_duration = row_series.get('transfer_duration', None)
+        transfer_duration = None if check_nan_or_falsy(row_series, 'transfer_duration') else row_series['transfer_duration']
 
         price = zenkaku_to_hankaku(price)
         price = int(price)

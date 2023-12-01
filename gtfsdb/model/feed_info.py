@@ -64,9 +64,9 @@ class FeedInfo(Base):
         feed_publisher_name = row_series['feed_publisher_name']
         feed_publisher_url = row_series['feed_publisher_url']
         feed_lang = row_series['feed_lang']
-        feed_start_date = row_series['feed_start_date']
-        feed_end_date = row_series['feed_end_date']
-        feed_version = row_series['feed_version']
+        feed_start_date = None if check_nan_or_falsy(row_series, 'feed_start_date') else row_series['feed_start_date']
+        feed_end_date = None if check_nan_or_falsy(row_series, 'feed_end_date') else row_series['feed_end_date']
+        feed_version = None if check_nan_or_falsy(row_series, 'feed_version') else row_series['feed_version']
 
         feed_lang = zenkaku_to_hankaku(feed_lang)
         if feed_start_date:

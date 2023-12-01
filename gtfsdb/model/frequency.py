@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, SmallInteger
 from model.base import Base
 from model.conversion.string import zenkaku_to_hankaku
 from model.validation.time import is_valid_hhmmss_format
-from model.validation.util import is_required_column
+from model.validation.util import is_required_column, check_nan_or_falsy
 
 
 class Frequency(Base):
@@ -50,6 +50,7 @@ class Frequency(Base):
         end_time = row_series['end_time']
         headway_secs = row_series['headway_secs']
         exact_times = row_series.get('exact_times', None)
+        exact_times = None if check_nan_or_falsy(row_series, 'exact_times') else row_series['exact_times']
 
         start_time = zenkaku_to_hankaku(start_time)
         end_time = zenkaku_to_hankaku(end_time)

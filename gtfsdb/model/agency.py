@@ -100,10 +100,10 @@ class Agency(Base):
         agency_name = row_series['agency_name']
         agency_url = row_series['agency_url']
         agency_timezone = row_series['agency_timezone']
-        agency_lang = row_series.get('agency_lang', None)
-        agency_phone = row_series.get('agency_phone', None)
-        agency_fare_url = row_series.get('agency_fare_url', None)
-        agency_email = row_series.get('agency_email', None)
+        agency_lang = None if check_nan_or_falsy(row_series, 'agency_lang') else row_series['agency_lang']
+        agency_phone = None if check_nan_or_falsy(row_series, 'agency_phone') else row_series['agency_phone']
+        agency_fare_url = None if check_nan_or_falsy(row_series, 'agency_fare_url') else row_series['agency_fare_url']
+        agency_email = None if check_nan_or_falsy(row_series, 'agency_email') else row_series['agency_email']
 
         return Agency(
             agency_id=agency_id,

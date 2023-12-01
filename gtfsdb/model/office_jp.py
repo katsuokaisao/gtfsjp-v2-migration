@@ -45,11 +45,11 @@ class OfficeJP(Base):
     def create_instance_from_series(row_series):
         office_id = row_series['office_id']
         office_name = row_series['office_name']
-        office_url = row_series.get('office_url', None)
-        office_phone = row_series.get('office_phone', None)
+        office_url = None if check_nan_or_falsy(row_series, 'office_url') else row_series['office_url']
+        office_phone = None if check_nan_or_falsy(row_series, 'office_phone') else row_series['office_phone']
 
-        office_url = zenkaku_to_hankaku(office_url)
-        office_phone = zenkaku_to_hankaku(office_phone)
+        office_url = zenkaku_to_hankaku(office_url) if office_url else None
+        office_phone = zenkaku_to_hankaku(office_phone) if office_phone else None
 
         return OfficeJP(
             office_id=office_id,
