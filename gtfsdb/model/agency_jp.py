@@ -1,4 +1,3 @@
-from pandas import isna
 from sqlalchemy import Column, Integer, String
 from model.base import Base
 from model.conversion.string import zenkaku_to_hankaku

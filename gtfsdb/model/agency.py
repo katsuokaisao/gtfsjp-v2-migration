@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from pandas import isna
 from model.base import Base
 from model.validation.url import is_valid_url
 from model.validation.tz import is_valid_timezone
