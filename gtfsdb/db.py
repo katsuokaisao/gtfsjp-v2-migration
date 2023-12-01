@@ -41,6 +41,7 @@ class Database():
         try:
             for target_class in self.target_classes:
                 target_class.load_table(extract_dir, sess)
+            sess.commit()
         except Exception as e:
             sess.rollback()
             raise e
