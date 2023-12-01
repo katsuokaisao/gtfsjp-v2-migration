@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from model.agency import Agency
 
 
 class Database():
@@ -48,4 +49,11 @@ class Database():
             target_class.validate_table(extract_dir)
 
     def check_data(self):
+        sess = self.new_session()
+        agencies = sess.query(Agency).all()
+        print("agency_id-route-id-trip-id")
+        for agency in agencies:
+            for route in agency.routes:
+                for trip in route.trips:
+                    print(f"{agency.agency_id}-{route.route_id}-{trip.trip_id}")
         print("check data")
